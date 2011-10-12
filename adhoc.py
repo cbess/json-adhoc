@@ -7,7 +7,7 @@ class JSONAdhoc(object):
     """Represents a JSON adhoc environment wrapper
     """
     def __init__(self, json_string, headers=None):
-        self.json_string = json_string
+        self.json_string = json_string.strip()
         self._response = None
         self.request_type = None
         if headers is None:
@@ -31,7 +31,7 @@ class JSONAdhoc(object):
     def send_request(self, url, is_async=False):
         """Sends the JSON request
         """
-        body = ''
+        body = None
         if self.request_type == 'POST':
             body = self.json_string
         elif self.request_type == 'GET':
@@ -39,8 +39,9 @@ class JSONAdhoc(object):
             url = '%s%s' % (url, self.json_string)
             pass
         # perform the request
-        req = urllib2.Request(url, body, self.headers)
-        response_stream = urllib2.urlopen(req)
+        request = urllib2.Request(url, body, self.headers)
+        # request.add_header('Referer', 'test')
+        response_stream = urllib2.urlopen(request)
         self._response = response_stream.read()
         return self.response()
         
